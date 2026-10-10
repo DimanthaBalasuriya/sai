@@ -1,0 +1,4 @@
+add_library(engine_debug_draw STATIC src/DebugDraw.cpp)
+target_include_directories(engine_debug_draw PUBLIC include)
+target_link_libraries(engine_debug_draw PUBLIC engine_extensions)
+engine_target(engine_debug_draw)

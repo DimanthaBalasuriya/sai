@@ -1,0 +1,5 @@
+add_library(engine_assets STATIC src/Registry.cpp src/GltfImporter.cpp src/SceneImport.cpp)
+target_include_directories(engine_assets PUBLIC include PRIVATE "${cgltf_SOURCE_DIR}" "${stb_SOURCE_DIR}")
+target_link_libraries(engine_assets PUBLIC engine_scene PRIVATE nlohmann_json::nlohmann_json glm::glm)
+target_compile_definitions(engine_assets PRIVATE GLM_FORCE_RADIANS GLM_ENABLE_EXPERIMENTAL _CRT_SECURE_NO_WARNINGS)
+engine_target(engine_assets)

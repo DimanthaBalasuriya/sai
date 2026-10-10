@@ -1,0 +1,18 @@
+#include "engine/lighting/MemoryPolicy.hpp"
+#include "engine/lighting/Providers.hpp"
+#include "engine/lighting/ShadowMath.hpp"
+#include "engine/scene/Serialization.hpp"
+#include "../engine/lighting/render/LtcTables.hpp"
+#include <glm/gtc/type_ptr.hpp>
+#include <iostream>
+using namespace Engine;
+int main(){int failures=0;auto check=[&](bool v,const char* message){if(!v){std::cerr<<message<<'\n';++failures;}};check(bool(Lighting::RegisterComponents()),"register light types");check(bool(Lighting::RegisterSettings()),"register providers");Scene::World world;Scene::CommandHistory history;
+    Scene::EntityDefinition e;e.id={1,1};Scene::ModuleComponent component;Scene::DefaultComponent(Lighting::kEnvironmentSettings,component);component.fields[0]=std::uint32_t(0);component.fields[1]=Vec3{2,3,4};e.extensions.push_back(component);Scene::DefaultComponent(Lighting::kFogSettings,component);e.extensions.push_back(component);Scene::DefaultComponent(Lighting::kExposureSettings,component);e.extensions.push_back(component);check(bool(history.Execute(world,std::make_unique<Scene::CreateEntityCommand>(e))),"create reflected settings");Renderer::RenderWorld snapshot;world.Extract(snapshot);check(snapshot.settings.environment==0&&snapshot.settings.ambient.y==3&&snapshot.settings.fog==1&&snapshot.settings.autoExposure==1,"settings extraction");check(!history.Execute(world,std::make_unique<Scene::SetFieldCommand>(e.id,Lighting::kExposureSettings,"minEV100",21.f)),"invalid exposure range rejected");history.Execute(world,std::make_unique<Scene::SetFieldCommand>(e.id,Lighting::kEnvironmentSettings,"intensity",5.f));world.Extract(snapshot);check(snapshot.settings.environmentIntensity==5,"incremental settings extraction");history.Undo(world);world.Extract(snapshot);check(snapshot.settings.environmentIntensity==1,"provider settings undo");
+    std::vector<Guid> icons;world.VisibleEntitiesWithoutMesh(icons);check(icons.size()==1&&icons[0]==e.id,"meshless settings icon visibility");
+    Renderer::RenderCamera camera;auto identity=glm::mat4(1);std::copy_n(glm::value_ptr(identity),16,camera.transform.values.begin());Renderer::RenderLight sun;sun.direction={0,-1,0};sun.shadow.resolution=1024;auto cascades=Lighting::BuildCascades(camera,sun,16.f/9);check(cascades[0].split>camera.nearPlane&&cascades[3].split==200,"cascade splits");for(int i=1;i<4;++i)check(cascades[i].split>cascades[i-1].split,"monotonic splits");camera.transform.values[12]=cascades[0].radius/1024*.1f;auto shifted=Lighting::BuildCascades(camera,sun,16.f/9);check(glm::length(shifted[0].center-cascades[0].center)<1e-5,"subtexel snap invariance");
+    Lighting::ShadowAtlasAllocator allocator;for(int i=0;i<4;++i)check(bool(allocator.Allocate(2048)),"atlas allocation");check(!allocator.Allocate(256),"atlas full");allocator.Clear();check(bool(allocator.Allocate(256)),"atlas reset");
+    check(Lighting::ClusterListCapacity(13056,16)==256,"1080p cluster budget");auto capacity=Lighting::ClusterListCapacity(52224,16);check(capacity<256&&std::uint64_t(capacity)*52224*4<=16*1024*1024,"4K cluster memory degradation");
+    auto lut=Lighting::LtcTables();check(lut.size()==4096,"real LTC table dimensions");for(auto& entry:lut)check(std::isfinite(entry.matrix.x)&&std::isfinite(entry.amplitude.x)&&entry.amplitude.x>=0,"finite LTC fit");
+    Lighting::RectLight rect;rect.common.unit=1;rect.intensity=3.14159265f*rect.width*rect.height*100;Lighting::Encode(Lighting::kRectLight,&rect,component);auto type=Lighting::FindLightType(Lighting::kRectLight);auto light=type->packer(component,Mat4{},Guid{2,1});check(std::abs(light.intensity-100)<.001,"rect lumen radiance conversion");
+    return failures?1:0;
+}

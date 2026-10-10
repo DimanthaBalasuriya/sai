@@ -1,0 +1,5 @@
+KhronosGroup/glTF-Sample-Assets
+Commit: edc7c9e67c639d230715049ee31f9a96a6babbbe
+MetalRoughSpheres (2017 Analytical Graphics, Inc.)
+CC-BY-4.0; see README-upstream.md
+https://github.com/KhronosGroup/glTF-Sample-Assets/tree/edc7c9e67c639d230715049ee31f9a96a6babbbe/Models/MetalRoughSpheres

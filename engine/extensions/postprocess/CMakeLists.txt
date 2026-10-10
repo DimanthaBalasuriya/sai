@@ -1,0 +1,4 @@
+add_library(engine_postprocess STATIC src/PostProcess.cpp)
+target_include_directories(engine_postprocess PUBLIC include)
+target_link_libraries(engine_postprocess PUBLIC engine_extensions)
+engine_target(engine_postprocess)

@@ -1,0 +1,6 @@
+{"version":1,"presets":[
+ {"name":"Clear","parameters":{"coverage":0.08,"type":0.1,"precipitation":0,"wind":[6,0,2],"fogDensity":0.000008,"wetness":0}},
+ {"name":"Partly cloudy","parameters":{"coverage":0.35,"type":0.3,"precipitation":0,"wind":[12,0,3],"fogDensity":0.000015,"wetness":0}},
+ {"name":"Overcast","parameters":{"coverage":0.88,"type":0.75,"precipitation":0.15,"wind":[18,0,5],"fogDensity":0.00008,"wetness":0.3}},
+ {"name":"Storm","parameters":{"coverage":0.98,"type":1,"precipitation":1,"wind":[35,0,10],"fogDensity":0.00018,"wetness":1}}
+]}

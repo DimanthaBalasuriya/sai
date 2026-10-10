@@ -1,0 +1,5 @@
+add_library(engine_scene STATIC src/World.cpp src/Commands.cpp src/Serialization.cpp src/EntityFeatures.cpp)
+target_include_directories(engine_scene PUBLIC include)
+target_link_libraries(engine_scene PUBLIC engine_renderer PRIVATE EnTT::EnTT glm::glm nlohmann_json::nlohmann_json)
+target_compile_definitions(engine_scene PRIVATE GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_FORCE_RADIANS)
+engine_target(engine_scene)

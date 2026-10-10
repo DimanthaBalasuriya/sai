@@ -1,0 +1,311 @@
+{
+  "asset": {
+    "version": "2.0",
+    "generator": "Engine M4 test fixture"
+  },
+  "scene": 0,
+  "scenes": [
+    {
+      "nodes": [
+        0
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "Material Gallery",
+      "children": [
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    {
+      "name": "Copper / ceramic cube",
+      "mesh": 0,
+      "translation": [
+        -2.5,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "Metallic roughness sphere",
+      "mesh": 1,
+      "translation": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "Second textured sphere",
+      "mesh": 1,
+      "translation": [
+        2.5,
+        1,
+        0
+      ]
+    },
+    {
+      "name": "Floor",
+      "mesh": 0,
+      "translation": [
+        0,
+        -0.25,
+        0
+      ],
+      "scale": [
+        5,
+        0.2,
+        3
+      ]
+    }
+  ],
+  "meshes": [
+    {
+      "name": "Split material cube",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 3,
+          "material": 0
+        },
+        {
+          "attributes": {
+            "POSITION": 0,
+            "NORMAL": 1,
+            "TEXCOORD_0": 2
+          },
+          "indices": 4,
+          "material": 1
+        }
+      ]
+    },
+    {
+      "name": "Textured sphere",
+      "primitives": [
+        {
+          "attributes": {
+            "POSITION": 5,
+            "NORMAL": 6,
+            "TEXCOORD_0": 7
+          },
+          "indices": 8,
+          "material": 2
+        }
+      ]
+    }
+  ],
+  "materials": [
+    {
+      "name": "Copper",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.95,
+          0.5,
+          0.22,
+          1
+        ],
+        "metallicFactor": 1,
+        "roughnessFactor": 0.22
+      }
+    },
+    {
+      "name": "Ceramic",
+      "pbrMetallicRoughness": {
+        "baseColorFactor": [
+          0.18,
+          0.32,
+          0.52,
+          1
+        ],
+        "metallicFactor": 0,
+        "roughnessFactor": 0.7
+      }
+    },
+    {
+      "name": "Textured metal",
+      "pbrMetallicRoughness": {
+        "baseColorTexture": {
+          "index": 0
+        },
+        "metallicRoughnessTexture": {
+          "index": 1
+        },
+        "metallicFactor": 1,
+        "roughnessFactor": 1
+      }
+    }
+  ],
+  "images": [
+    {
+      "uri": "gallery-base.png"
+    },
+    {
+      "uri": "gallery-mr.png"
+    }
+  ],
+  "textures": [
+    {
+      "source": 0
+    },
+    {
+      "source": 1
+    }
+  ],
+  "buffers": [
+    {
+      "byteLength": 67760,
+      "uri": "gallery.bin"
+    }
+  ],
+  "bufferViews": [
+    {
+      "buffer": 0,
+      "byteOffset": 0,
+      "byteLength": 288
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 288,
+      "byteLength": 288
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 576,
+      "byteLength": 192
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 768,
+      "byteLength": 72
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 840,
+      "byteLength": 72
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 912,
+      "byteLength": 14700
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 15612,
+      "byteLength": 14700
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 30312,
+      "byteLength": 9800
+    },
+    {
+      "buffer": 0,
+      "byteOffset": 40112,
+      "byteLength": 27648
+    }
+  ],
+  "accessors": [
+    {
+      "bufferView": 0,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "max": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "bufferView": 1,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC3",
+      "min": [
+        -1,
+        -1,
+        -1
+      ],
+      "max": [
+        1,
+        1,
+        1
+      ]
+    },
+    {
+      "bufferView": 2,
+      "componentType": 5126,
+      "count": 24,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 3,
+      "componentType": 5125,
+      "count": 18,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 4,
+      "componentType": 5125,
+      "count": 18,
+      "type": "SCALAR"
+    },
+    {
+      "bufferView": 5,
+      "componentType": 5126,
+      "count": 1225,
+      "type": "VEC3",
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "bufferView": 6,
+      "componentType": 5126,
+      "count": 1225,
+      "type": "VEC3",
+      "min": [
+        -1.0,
+        -1.0,
+        -1.0
+      ],
+      "max": [
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    {
+      "bufferView": 7,
+      "componentType": 5126,
+      "count": 1225,
+      "type": "VEC2"
+    },
+    {
+      "bufferView": 8,
+      "componentType": 5125,
+      "count": 6912,
+      "type": "SCALAR"
+    }
+  ]
+}

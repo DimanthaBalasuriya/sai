@@ -1,0 +1,5 @@
+add_library(engine_renderer STATIC src/RenderGraph.cpp src/MeshDemo.cpp src/ForwardPipeline.cpp src/ShadowGeometry.cpp)
+target_include_directories(engine_renderer PUBLIC include)
+target_link_libraries(engine_renderer PUBLIC engine_rhi PRIVATE glm::glm)
+target_compile_definitions(engine_renderer PRIVATE GLM_FORCE_DEPTH_ZERO_TO_ONE GLM_FORCE_RADIANS)
+engine_target(engine_renderer)

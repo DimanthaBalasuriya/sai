@@ -1,0 +1,24 @@
+{
+  "version": 1,
+  "colors": {
+    "bg-app":"#101010", "bg-surface":"#121212", "bg-raised":"#181818",
+    "border":"#212121", "border-light":"#1a1a1a", "scrollbar":"#303030",
+    "scrollbar-hover":"#3c3c3c", "scrollbar-active":"#4a4a4a",
+    "btn":"#504848", "btn-hover":"#5e5656", "btn-active":"#6c6464",
+    "text-primary":"#ffffff", "text-secondary":"#d3d3d3", "text-muted":"#a8a8a8", "text-dim":"#797979",
+    "positive":"#15ac63", "info":"#4fbbf9", "info-hover":"#8bd3fb",
+    "negative":"#ce3d53", "warning":"#d8b807", "solana":"#9945ff"
+  },
+  "metrics": {
+    "window-padding-x":8, "window-padding-y":8, "frame-padding-x":6, "frame-padding-y":4,
+    "item-spacing-x":8, "item-spacing-y":6, "inner-spacing-x":6, "inner-spacing-y":4,
+    "indent":16, "window-rounding":4, "frame-rounding":3, "popup-rounding":4,
+    "scrollbar-rounding":6, "grab-rounding":3, "tab-rounding":3,
+    "window-border":1, "frame-border":0, "popup-border":1, "scrollbar-size":10,
+    "grab-min":10, "dock-separator":1, "font-size":15, "mono-size":14,
+    "hover-seconds":0.1, "tooltip-delay":0.5,
+    "selected-alpha":0.22, "active-alpha":0.32, "dock-preview-alpha":0.4,
+    "resize-hover-alpha":0.4, "resize-active-alpha":0.7,
+    "text-selection-alpha":0.35, "table-alt-alpha":0.02, "modal-alpha":0.6
+  }
+}

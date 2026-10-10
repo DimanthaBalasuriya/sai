@@ -1,0 +1,20 @@
+file(GLOB lighting_dependencies CONFIGURE_DEPENDS "${PROJECT_SOURCE_DIR}/engine/lighting/shaders/*.slang")
+find_program(ENGINE_SLANGC NAMES slangc HINTS "${PROJECT_SOURCE_DIR}/.tools/slang-2026.19/bin" "$ENV{VULKAN_SDK}/Bin" DOC "Path to the Slang shader compiler" REQUIRED)
+set(ENGINE_SHADER_OUTPUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/compiled" CACHE INTERNAL "Compiled bootstrap shaders")
+set(shader_outputs)
+foreach(shader IN ITEMS triangle mesh forward)
+foreach(stage IN ITEMS vertex fragment)
+  if(stage STREQUAL "vertex")
+    set(entry VertexMain)
+  else()
+    set(entry FragmentMain)
+  endif()
+  set(output "${ENGINE_SHADER_OUTPUT_DIR}/${shader}.${stage}.spv")
+  add_custom_command(OUTPUT "${output}"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${ENGINE_SHADER_OUTPUT_DIR}"
+    COMMAND "${ENGINE_SLANGC}" "${CMAKE_CURRENT_SOURCE_DIR}/${shader}.slang" -target spirv -profile spirv_1_5 -entry ${entry} -stage ${stage} -matrix-layout-column-major -emit-spirv-directly -o "${output}"
+    DEPENDS ${lighting_dependencies} "${shader}.slang" "${PROJECT_SOURCE_DIR}/engine/lighting/shaders/brdf.slang" "${PROJECT_SOURCE_DIR}/engine/lighting/shaders/lighting.slang" "${PROJECT_SOURCE_DIR}/engine/lighting/shaders/DirectionalLight.slang" VERBATIM)
+  list(APPEND shader_outputs "${output}")
+endforeach()
+endforeach()
+add_custom_target(engine_shaders DEPENDS ${shader_outputs})

@@ -1,0 +1,24 @@
+#include "common.slang"
+struct PassData {float4x4 inverseViewProjection;float4 parameters;Parameters* settings;uint2 flags;float4 camera;};
+[[vk::push_constant]] ConstantBuffer<PassData> pass;
+struct VertexOutput{float4 position:SV_Position;float2 uv:TEXCOORD0;};
+[shader("fragment")]
+float4 FragmentMain(VertexOutput input):SV_Target{
+ Parameters p=*pass.settings;p.sun.w*=pass.parameters.w;p.moon.w*=pass.parameters.w;uint mode=ENGINE_SKY_COMPOSITE_MODE,debug=pass.flags.x;float2 uv=input.uv;
+ float4 scene=images[0].SampleLevel(samplers[0],uv,0);float3 ray=ViewRay(p,uv),color=scene.rgb;
+ if(mode==0){if(scene.a==0){float3 ground=images[1].SampleLevel(samplers[0],SkyUV(ray),0).rgb*pass.parameters.w,T;float3 space=AtmosphereRay(p,ray,1e9,p.orbital.z>0?128:32,2,3,T);color=lerp(ground,space,p.orbital.x);if(debug==13){float3 reference=AtmosphereRay(p,ray,1e9,128,2,3,T);color=abs(color-reference);}if(debug==14)color=AtmosphereRay(p,ray,1e9,128,2,3,T);}if(debug==1)color=images[2].SampleLevel(samplers[0],uv,0).rgb;if(debug==2)color=images[3].SampleLevel(samplers[0],uv,0).rgb;if(debug==3)color=images[1].SampleLevel(samplers[0],uv,0).rgb;}
+ float3 planetOrigin=float3(p.cameraTime.x,p.planet.x+max(1,p.orbital.y),p.cameraTime.z);bool planetVisible=Sphere(planetOrigin,ray,p.planet.x).x<=0;float3 bodyTransmission=SunTransAt(p,p.orbital.y,ray.y,2);if(debug==11)color=planetVisible?float3(1):float3(0);if(debug==12)color=SunTransAt(p,p.orbital.y,p.sun.y,2);
+ if(mode==1&&scene.a==0&&planetVisible){float sunRadius=p.celestial.x*PI/360,moonRadius=p.celestial.y*PI/360;float sunCos=dot(ray,p.sun.xyz),moonCos=dot(ray,p.moon.xyz);if(sunCos>cos(sunRadius)){float radius=acos(clamp(sunCos,-1,1))/sunRadius,limb=.4+.6*sqrt(saturate(1-radius*radius));color+=p.sunColor.rgb*p.sun.w*limb*24*bodyTransmission;}if(moonCos>cos(moonRadius)){float3 up=abs(p.moon.y)<.95?float3(0,1,0):float3(1,0,0),right=normalize(cross(up,p.moon.xyz)),vertical=cross(p.moon.xyz,right);float2 xy=float2(dot(ray,right),dot(ray,vertical))/sin(moonRadius);float z=sqrt(saturate(1-dot(xy,xy)));float phase=p.celestial.z*2*PI;float light=saturate(xy.x*sin(phase)-z*cos(phase));float albedo=.75+.25*Noise(float3(xy*12,5));color=p.moonColor.rgb*p.moon.w*light*albedo*18*p.extra.z/.12*bodyTransmission;}if(debug==7)color=float3(sunCos>cos(sunRadius)?1.f:0.f,moonCos>cos(moonRadius)?1.f:0.f,0);}
+ if(mode==2&&scene.a==0&&planetVisible){float2 coord=SkyUV(ray)*float2(1800,900),cell=floor(coord);float random=Hash(float3(cell,7)),density=p.stars.x*.015*exp2((p.extra.x-6)*.5);float star=0;if(random<density){float2 center=float2(Hash(float3(cell,11)),Hash(float3(cell,19)));float d=length(frac(coord)-center);star=exp(-d*d*90)*(1+sin(p.cameraTime.w*1.7+random*211)*p.stars.w);}float3 tint=lerp(float3(.7,.82,1),float3(1,.8,.6),random*p.extra.y);float band=pow(saturate(1-abs(ray.y*.7+ray.z*.3)*4),4)*p.stars.z*Noise(ray*150)*.045;float moonRadius=p.celestial.y*PI/360;if(dot(ray,p.moon.xyz)>cos(moonRadius))star=band=0;float3 stars=(star*tint+band)*p.stars.y*lerp(p.moonColor.w,1,p.orbital.x)*bodyTransmission;if(debug==6)color=stars;else color+=stars*pass.parameters.w;}
+ if(mode==3){
+   float z=images[2].Load(int3(uint2(input.position.xy),0)).r,opaqueDistance=z>0?length(WorldAt(p,uv,z)-p.cameraTime.xyz):120000;
+   uint w,h;images[1].GetDimensions(w,h);float2 pixel=uv*float2(w,h)-.5,base=floor(pixel),fraction=frac(pixel);float4 cloud=0;float weightSum=0;
+   for(uint y=0;y<2;++y)for(uint x=0;x<2;++x){float2 tap=(base+float2(x,y)+.5)/float2(w,h);float distance=images[3].SampleLevel(samplers[0],tap,0).r*120000;float weight=(x!=0?fraction.x:1-fraction.x)*(y!=0?fraction.y:1-fraction.y);if(z>0&&distance>opaqueDistance+max(50,opaqueDistance*.02))weight*=.0001;cloud+=images[1].SampleLevel(samplers[0],tap,0)*weight;weightSum+=weight;}
+   cloud=weightSum>.001?cloud/weightSum:float4(0,0,0,1);color=scene.rgb*cloud.a+cloud.rgb*pass.parameters.w;if(debug==4)color=1-cloud.aaa;if(debug==5)color=images[3].SampleLevel(samplers[0],uv,0).ggg;
+ }
+ if(mode==4){float depth=images[1].Load(int3(uint2(input.position.xy),0)).r;if(depth>0){float distance=length(WorldAt(p,uv,depth)-p.cameraTime.xyz),slice=saturate(log2(1+distance)/log2(1+p.quality.w));float4 aerial=volumes[2].SampleLevel(samplers[0],float3(uv,slice),0);if(p.orbital.x>0||distance>p.quality.w){float3 T;float3 scatter=AtmosphereRay(p,ray,distance,32,6,7,T);color=scene.rgb*T+scatter;}else color=scene.rgb*aerial.a+aerial.rgb*pass.parameters.w;}if(debug==8)color=volumes[2].SampleLevel(samplers[0],float3(uv,.5),0).rgb;}
+ if(mode==5&&scene.a==0)color=cubes[1].SampleLevel(samplers[0],ray,0).rgb*pass.parameters.w;
+ if(debug==9)color=images[4].SampleLevel(samplers[0],uv,0).rgb;
+ if(debug==10)color=images[5].SampleLevel(samplers[0],uv,0).rrr;
+ if(mode==4)color*=p.extra.w;return float4(clamp(color,0,65504),scene.a);
+}

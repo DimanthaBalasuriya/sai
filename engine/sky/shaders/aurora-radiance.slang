@@ -1,0 +1,1 @@
+float3 AuroraRadiance(float3 ray,float elapsed,float night){float azimuth=atan2(ray.z,ray.x);float curtain=pow(saturate(1-abs(ray.y-.27-.08*sin(azimuth*7+elapsed*.025))*12),2);float ribbons=pow(saturate(sin(azimuth*43+sin(azimuth*9)*4+elapsed*.08)),4);return lerp(float3(.03,.9,.25),float3(.28,.08,.8),saturate(ray.y*3))*curtain*ribbons*night*.6;}
